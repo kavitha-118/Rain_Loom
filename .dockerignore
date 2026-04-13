@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+.git
+.claude
+notebooks
+tests
+*.egg-info
+.env
+*.parquet
+models/*.pkl
+models/*.h5

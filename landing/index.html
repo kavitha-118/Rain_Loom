@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RainLoom - Monsoon Risk Intelligence for Textile Markets</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>R</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="brand-mark">R</div>
+      <span class="brand-text">RainLoom</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#problem">Problem</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#features">Features</a>
+      <a href="#results">Results</a>
+      <a href="https://rainloomtextiles.streamlit.app" target="_blank" class="btn btn-nav">Launch Dashboard</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="images/hero-cotton-field.png" alt="" class="hero-bg-img" />
+    <div class="hero-overlay"></div>
+    <div class="hero-grain"></div>
+  </div>
+
+  <div class="hero-tree">
+    <svg viewBox="0 0 900 260" class="tree-svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#34d399" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0%" y1="0%" x2="100%">
+          <stop offset="0%" stop-color="#34d399" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="g3" x1="0%" y1="0%" x2="100%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.7"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <path d="M 100 130 C 180 130, 220 80, 300 80" stroke="url(#g1)" stroke-width="1.8" fill="none" class="tree-path" filter="url(#glow)"/>
+      <path d="M 100 130 C 180 130, 220 130, 300 130" stroke="url(#g1)" stroke-width="1.8" fill="none" class="tree-path" style="animation-delay:0.3s" filter="url(#glow)"/>
+      <path d="M 100 130 C 180 130, 220 180, 300 180" stroke="url(#g1)" stroke-width="1.8" fill="none" class="tree-path" style="animation-delay:0.6s" filter="url(#glow)"/>
+
+      <path d="M 300 80  C 380 80,  420 60,  500 60"  stroke="url(#g2)" stroke-width="1.5" fill="none" class="tree-path" style="animation-delay:0.8s"/>
+      <path d="M 300 80  C 380 80,  420 100, 500 100" stroke="url(#g2)" stroke-width="1.5" fill="none" class="tree-path" style="animation-delay:1.0s"/>
+      <path d="M 300 130 C 380 130, 420 130, 500 130" stroke="url(#g2)" stroke-width="1.5" fill="none" class="tree-path" style="animation-delay:1.1s"/>
+      <path d="M 300 180 C 380 180, 420 160, 500 160" stroke="url(#g2)" stroke-width="1.5" fill="none" class="tree-path" style="animation-delay:1.3s"/>
+      <path d="M 300 180 C 380 180, 420 200, 500 200" stroke="url(#g2)" stroke-width="1.5" fill="none" class="tree-path" style="animation-delay:1.5s"/>
+
+      <path d="M 500 60  C 580 60,  640 40,  720 40"  stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:1.6s"/>
+      <path d="M 500 60  C 580 60,  640 70,  720 70"  stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:1.7s"/>
+      <path d="M 500 100 C 580 100, 640 95,  720 95"  stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:1.8s"/>
+      <path d="M 500 130 C 580 130, 640 125, 720 125" stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:1.9s"/>
+      <path d="M 500 130 C 580 130, 640 155, 720 155" stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:2.0s"/>
+      <path d="M 500 160 C 580 160, 640 180, 720 180" stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:2.1s"/>
+      <path d="M 500 200 C 580 200, 640 210, 720 210" stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:2.2s"/>
+      <path d="M 500 200 C 580 200, 640 235, 720 235" stroke="url(#g3)" stroke-width="1.2" fill="none" class="tree-path" style="animation-delay:2.3s"/>
+
+      <circle cx="100" cy="130" r="24" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.5)" stroke-width="1.5" class="tree-node"/>
+      <text x="100" y="127" text-anchor="middle" fill="#60a5fa" font-size="9" font-family="Inter" font-weight="700">MONSOON</text>
+      <text x="100" y="139" text-anchor="middle" fill="#475569" font-size="7.5" font-family="Inter">Deficit</text>
+
+      <circle cx="300" cy="80" r="16" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.4)" stroke-width="1.2" class="tree-node" style="animation-delay:0.5s"/>
+      <text x="300" y="83" text-anchor="middle" fill="#34d399" font-size="7.5" font-family="Inter" font-weight="600">Cotton</text>
+      <circle cx="300" cy="130" r="16" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.4)" stroke-width="1.2" class="tree-node" style="animation-delay:0.7s"/>
+      <text x="300" y="133" text-anchor="middle" fill="#34d399" font-size="7.5" font-family="Inter" font-weight="600">Yield</text>
+      <circle cx="300" cy="180" r="16" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.4)" stroke-width="1.2" class="tree-node" style="animation-delay:0.9s"/>
+      <text x="300" y="183" text-anchor="middle" fill="#34d399" font-size="7.5" font-family="Inter" font-weight="600">ENSO</text>
+
+      <circle cx="500" cy="60" r="14" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.35)" stroke-width="1" class="tree-node" style="animation-delay:1.2s"/>
+      <text x="500" y="63" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="Inter" font-weight="600">GARCH</text>
+      <circle cx="500" cy="100" r="14" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.35)" stroke-width="1" class="tree-node" style="animation-delay:1.3s"/>
+      <text x="500" y="103" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="Inter" font-weight="600">XGB</text>
+      <circle cx="500" cy="130" r="14" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.35)" stroke-width="1" class="tree-node" style="animation-delay:1.4s"/>
+      <text x="500" y="133" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="Inter" font-weight="600">LSTM</text>
+      <circle cx="500" cy="160" r="14" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.35)" stroke-width="1" class="tree-node" style="animation-delay:1.5s"/>
+      <text x="500" y="163" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="Inter" font-weight="600">VAR</text>
+      <circle cx="500" cy="200" r="14" fill="rgba(251,191,36,0.1)" stroke="rgba(251,191,36,0.35)" stroke-width="1" class="tree-node" style="animation-delay:1.6s"/>
+      <text x="500" y="203" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="Inter" font-weight="600">IV/2SLS</text>
+
+      <rect x="706" y="30" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2s"/>
+      <text x="734" y="43" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">ARVIND</text>
+      <rect x="706" y="60" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.1s"/>
+      <text x="734" y="73" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">TRIDENT</text>
+      <rect x="706" y="85" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.2s"/>
+      <text x="734" y="98" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">KPRMILL</text>
+      <rect x="706" y="115" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.3s"/>
+      <text x="734" y="128" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">WELSPUN</text>
+      <rect x="706" y="145" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.4s"/>
+      <text x="734" y="158" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">RSWM</text>
+      <rect x="706" y="170" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.5s"/>
+      <text x="734" y="183" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">VTL</text>
+      <rect x="706" y="200" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.6s"/>
+      <text x="734" y="213" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">PAGEIND</text>
+      <rect x="706" y="225" width="56" height="20" rx="4" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.3)" stroke-width="1" class="tree-node" style="animation-delay:2.7s"/>
+      <text x="734" y="238" text-anchor="middle" fill="#a78bfa" font-size="7" font-family="JetBrains Mono, monospace" font-weight="600">RAYMOND</text>
+
+      <text x="100" y="20" text-anchor="middle" fill="#334155" font-size="8" font-family="JetBrains Mono, monospace" font-weight="600" letter-spacing="0.1em">CLIMATE</text>
+      <text x="300" y="20" text-anchor="middle" fill="#334155" font-size="8" font-family="JetBrains Mono, monospace" font-weight="600" letter-spacing="0.1em">SUPPLY</text>
+      <text x="500" y="20" text-anchor="middle" fill="#334155" font-size="8" font-family="JetBrains Mono, monospace" font-weight="600" letter-spacing="0.1em">ML ENSEMBLE</text>
+      <text x="734" y="20" text-anchor="middle" fill="#334155" font-size="8" font-family="JetBrains Mono, monospace" font-weight="600" letter-spacing="0.1em">RISK SCORES</text>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Monsoon Risk Intelligence Platform</div>
+    <h1>Predict textile stock<br/><span class="gradient-text">volatility from rainfall</span></h1>
+    <p class="hero-sub">RainLoom connects monsoon failures to cotton prices to textile margin squeezes &mdash; giving portfolio managers a <strong>4-week lead time</strong> on volatility spikes with <strong>AUC 0.81</strong> accuracy, plus live alerts, geospatial nowcasts, and an institutional API layer.</p>
+    <div class="hero-actions">
+      <a href="https://rainloomtextiles.streamlit.app" target="_blank" class="btn btn-primary">
+        Launch Dashboard
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="https://github.com/Yasaswini-ch/Rain_Loom" target="_blank" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View Source
+      </a>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat">
+      <span class="stat-value" data-target="0.81">0.81</span>
+      <span class="stat-label">AUC-ROC</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">8</span>
+      <span class="stat-label">NSE Stocks</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">83</span>
+      <span class="stat-label">Districts</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">4 wk</span>
+      <span class="stat-label">Lead Time</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">5.8</span>
+      <span class="stat-label">F-Stat (IV)</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">18-24%</span>
+      <span class="stat-label">Hedging Alpha</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section section-dark" id="problem">
+  <div class="container">
+    <div class="split-section">
+      <div class="split-text">
+        <div class="section-badge">The Problem</div>
+        <h2>Why is this hard?</h2>
+        <p class="section-sub">India&apos;s Rs 12 lakh crore textile sector depends on monsoon-fed cotton. A single deficit season triggers a slow-motion crisis across the entire supply chain.</p>
+        <div class="info-list">
+          <div class="info-item">
+            <div class="info-num">40-80%</div>
+            <div class="info-text"><strong>Cotton in COGS</strong> &mdash; Extreme raw-material concentration leaves textile firms exposed to harvest failures.</div>
+          </div>
+          <div class="info-item">
+            <div class="info-num">4-8 wk</div>
+            <div class="info-text"><strong>Signal propagation delay</strong> &mdash; Rainfall deficit in July hits earnings in January. Most analysts miss the connection.</div>
+          </div>
+          <div class="info-item">
+            <div class="info-num">Zero</div>
+            <div class="info-text"><strong>Unified platforms</strong> &mdash; Climate, commodity, and equity data live in separate silos. Until now.</div>
+          </div>
+        </div>
+      </div>
+      <div class="split-image">
+        <img src="images/causal-chain.png" alt="Monsoon deficit to textile stock volatility causal chain" class="showcase-img" />
+        <div class="img-glow blue"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="container">
+    <div class="split-section reverse">
+      <div class="split-text">
+        <div class="section-badge">Architecture</div>
+        <h2>3-Layer ML Ensemble</h2>
+        <p class="section-sub">Three models capture different aspects of the risk signal, then merge through stacked generalization.</p>
+        <div class="arch-layers">
+          <div class="layer">
+            <div class="layer-tag purple">Layer 1</div>
+            <div class="layer-info">
+              <strong>GJR-GARCH</strong>
+              <span>Captures volatility clustering and leverage effects in textile stock returns.</span>
+            </div>
+          </div>
+          <div class="layer">
+            <div class="layer-tag blue">Layer 2</div>
+            <div class="layer-info">
+              <strong>XGBoost Classifier</strong>
+              <span>Gradient-boosted trees on 22 engineered features &mdash; monsoon deficit, cotton regime, VIX, ENSO phase.</span>
+            </div>
+          </div>
+          <div class="layer">
+            <div class="layer-tag cyan">Layer 3</div>
+            <div class="layer-info">
+              <strong>LSTM Sequence Model</strong>
+              <span>Recurrent network captures temporal dependencies in the rainfall-to-volatility chain.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-strip">
+          <div class="tech-logos">
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">Streamlit</span>
+            <span class="tech-pill">XGBoost</span>
+            <span class="tech-pill">statsmodels</span>
+            <span class="tech-pill">SHAP</span>
+            <span class="tech-pill">Plotly</span>
+            <span class="tech-pill">yfinance</span>
+          </div>
+        </div>
+      </div>
+      <div class="split-image">
+        <img src="images/ml-ensemble.png" alt="3-layer ML ensemble architecture: GARCH, XGBoost, LSTM" class="showcase-img" />
+        <div class="img-glow purple"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section section-dark" id="features">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Dashboard</div>
+      <h2>9 pages. One causal story.</h2>
+      <p class="section-sub center">Each page answers a specific question in the monsoon-to-volatility causal chain.</p>
+      <p class="section-sub center">A global intelligence layer spans every page: AI chat, email and Telegram alerts, live tickers, and telemetry grounded in real dashboard data.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card feature-highlight">
+        <div class="feature-header">
+          <span class="feature-number">01</span>
+          <span class="feature-tag">Real-time</span>
+        </div>
+        <h3>Live Risk Monitor</h3>
+        <p>Real-time ensemble risk scores for 8 NSE textile stocks with fan charts, live ticker strips, monsoon deficit meters, and cotton regime overlays.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">02</span>
+          <span class="feature-tag">Econometrics</span>
+        </div>
+        <h3>Causal Analysis</h3>
+        <p>Granger causality, VAR impulse-response, IV/2SLS, Sankey flows, and a knowledge graph that proves rainfall &rarr; cotton &rarr; volatility.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">03</span>
+          <span class="feature-tag">ML Ensemble</span>
+        </div>
+        <h3>Model Performance</h3>
+        <p>MS-GARCH, XGBoost, and sequence-model diagnostics with ROC curves, SHAP importance, and transparent temporal validation.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">04</span>
+          <span class="feature-tag">Interactive</span>
+        </div>
+        <h3>Scenario Simulator</h3>
+        <p>What-if tool for monsoon deficit, cotton prices, and VIX shocks that shows how risk propagates through the textile chain in real time.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">05</span>
+          <span class="feature-tag">Impact</span>
+        </div>
+        <h3>Societal Impact</h3>
+        <p>Actionable advisories for farmers and MSMEs, plus parametric payout simulation and a women&apos;s livelihood heatmap.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">06</span>
+          <span class="feature-tag">Backtesting</span>
+        </div>
+        <h3>Hedging Backtest</h3>
+        <p>MCX cotton hedge simulations across drought years with hedged vs unhedged P&amp;L, drawdown, and Sharpe comparisons.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">07</span>
+          <span class="feature-tag">Geospatial</span>
+        </div>
+        <h3>Geospatial Nowcast</h3>
+        <p>Live rainfall maps across 83 cotton-growing districts with anomaly detection and NASA MODIS and NDVI raster overlays.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">08</span>
+          <span class="feature-tag">B2B / API</span>
+        </div>
+        <h3>Institutional API Gateway</h3>
+        <p>API key generation, webhook builders, and embeddable risk widgets for ERPs, internal dashboards, and supply-chain portals.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-header">
+          <span class="feature-number">09</span>
+          <span class="feature-tag">Demo Mode</span>
+        </div>
+        <h3>Live Demo Playback</h3>
+        <p>Walk forward through the 2009 drought week by week and watch the risk gauge spike before the market fully reacts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section" id="results">
+  <div class="container">
+    <div class="split-section">
+      <div class="split-text">
+        <div class="section-badge">Results</div>
+        <h2>Validated on real<br/>drought years</h2>
+        <p class="section-sub">No toy datasets. Metrics are grounded in NSE equities, IMD rainfall, cotton signals, and live dashboard telemetry.</p>
+
+        <div class="results-metrics">
+          <div class="metric-row">
+            <div class="metric-box">
+              <span class="metric-val blue">0.81</span>
+              <span class="metric-name">AUC-ROC</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-val green">5.8</span>
+              <span class="metric-name">F-Stat (IV/2SLS)</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-box">
+              <span class="metric-val amber">18-24%</span>
+              <span class="metric-name">Hedging Alpha</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-val purple">4 weeks</span>
+              <span class="metric-name">Lead Time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="split-image">
+        <img src="images/portfolio-backtest.png" alt="Portfolio performance: 2009 Indian drought year - hedged vs unhedged" class="showcase-img" />
+        <div class="img-glow green"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section section-cta">
+  <div class="container section-center">
+    <h2>See it live</h2>
+    <p class="section-sub center">The full 9-page dashboard is deployed on Streamlit Cloud with live NSE, IMD, commodity, geospatial, and alerting workflows.</p>
+    <div class="cta-actions">
+      <a href="https://rainloomtextiles.streamlit.app" target="_blank" class="btn btn-primary btn-lg">
+        Launch RainLoom Dashboard
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="https://github.com/Yasaswini-ch/Rain_Loom" target="_blank" class="btn btn-ghost btn-lg">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub Repository
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-mark sm">R</div>
+        <span class="brand-text">RainLoom</span>
+        <span class="footer-tagline">Monsoon &rarr; Cotton &rarr; Margin &rarr; Volatility</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Yasaswini-ch/Rain_Loom" target="_blank">GitHub</a>
+        <a href="https://rainloomtextiles.streamlit.app" target="_blank">Dashboard</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>RainLoom v3.1.0</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
