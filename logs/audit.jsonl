@@ -13,3 +13,9 @@
 {"ts": "2026-04-13T19:15:55.091049+00:00", "category": "alert", "action": "scheduler_dispatch", "severity": "info", "ip": "\u2014", "user": "\u2014", "details": {"triggers": 5, "emails_sent": 0}}
 {"ts": "2026-04-13T19:19:13.020459+00:00", "category": "admin", "action": "admin_panel_access", "severity": "warning", "ip": "\u2014", "user": "\u2014", "details": {"page": "Security Audit"}}
 {"ts": "2026-04-13T19:22:49.510828+00:00", "category": "admin", "action": "admin_panel_access", "severity": "warning", "ip": "\u2014", "user": "\u2014", "details": {"page": "Security Audit"}}
+{"ts": "2026-04-14T05:49:55.092444+00:00", "category": "system", "action": "scheduler_started", "severity": "info", "ip": "\u2014", "user": "\u2014", "details": {"page": "app.py"}}
+{"ts": "2026-04-14T05:49:55.227782+00:00", "category": "alert", "action": "scheduler_dispatch", "severity": "info", "ip": "\u2014", "user": "\u2014", "details": {"triggers": 5, "emails_sent": 0}}
+{"ts": "2026-04-14T05:51:28.136179+00:00", "category": "admin", "action": "admin_panel_access", "severity": "warning", "ip": "\u2014", "user": "\u2014", "details": {"page": "Security Audit"}}
+{"ts": "2026-04-14T05:54:37.407045+00:00", "category": "auth", "action": "api_key_generated", "severity": "warning", "ip": "\u2014", "user": "admin-panel", "details": {"name": "icici risk engine"}}
+{"ts": "2026-04-14T05:55:06.651814+00:00", "category": "auth", "action": "api_key_generated", "severity": "warning", "ip": "\u2014", "user": "admin-panel", "details": {"name": "icici risk engine"}}
+{"ts": "2026-04-14T05:59:20.851807+00:00", "category": "admin", "action": "admin_panel_access", "severity": "warning", "ip": "\u2014", "user": "\u2014", "details": {"page": "Security Audit"}}

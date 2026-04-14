@@ -4,8 +4,7 @@ Page 10 — Security & Audit Log Dashboard
 Displays the real-time audit event trail, security health summary,
 subscriber management, and API key table.
 
-Access: All users see audit summary metrics.
-        Full log + subscriber list + key management require admin password.
+Access: The entire dashboard is restricted and requires the admin password to access.
 """
 
 from __future__ import annotations
@@ -153,6 +152,63 @@ st.markdown("""
 
 st.markdown('<div class="sec-div"></div>', unsafe_allow_html=True)
 
+_admin_key = "_rl_admin_authed"
+if _admin_key not in st.session_state:
+    st.session_state[_admin_key] = False
+
+if not st.session_state[_admin_key]:
+    st.markdown('<div class="admin-gate" style="max-width: 500px; margin: 2rem auto;">', unsafe_allow_html=True)
+    st.markdown("""
+    <h3>🔒 Admin Login Required</h3>
+    <p>Please enter the admin password to access the security board.</p>
+    """, unsafe_allow_html=True)
+    
+    with st.form("admin_login_form"):
+        import os
+        admin_pass_input = st.text_input(
+            "Admin Password", type="password", key="admin_pass_input",
+            placeholder="Enter admin password…"
+        )
+        submit_btn = st.form_submit_button("Login", type="primary")
+        if submit_btn:
+            expected = os.environ.get("ADMIN_PASSWORD_HASH", "")
+            raw_pass  = admin_pass_input.strip()
+            authed = False
+            if expected:
+                try:
+                    import bcrypt
+                    authed = bcrypt.checkpw(raw_pass.encode(), expected.encode())
+                except Exception:
+                    # fallback: plain comparison (dev only)
+                    authed = (raw_pass == expected)
+            else:
+                # No password set — allow access in dev mode with a warning
+                authed = (raw_pass == "admin")
+                st.warning("⚠️ No ADMIN_PASSWORD_HASH set in .env — using default dev password 'admin'. Set this before production.")
+            
+            if authed:
+                st.session_state[_admin_key] = True
+                try:
+                    from monsoon_textile_app.utils.audit_log import audit
+                    audit("admin", "admin_panel_access", severity="warning",
+                          details={"page": "Security Audit"})
+                except Exception:
+                    pass
+                st.rerun()
+            else:
+                st.error("❌ Incorrect password.")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.stop() # Prevent rendering the rest of the page
+
+# ── LOGGED IN VIEW ───────────────────────────────────────────────────────────
+col_lock1, col_lock2 = st.columns([8, 1])
+with col_lock2:
+    if st.button("🔒 Logout", key="btn_admin_lock", use_container_width=True):
+        st.session_state[_admin_key] = False
+        st.rerun()
+
+
 # ── Security Summary KPIs ──────────────────────────────────────────────────────
 try:
     from monsoon_textile_app.utils.audit_log import security_summary, get_recent_events
@@ -231,202 +287,153 @@ else:
 
 st.markdown('<div class="sec-div"></div>', unsafe_allow_html=True)
 
-# ── Admin Panel (password-gated) ───────────────────────────────────────────────
+# ── Admin Panel ───────────────────────────────────────────────
 st.markdown("### 🛡️ Admin Panel")
 
-_admin_key = "_rl_admin_authed"
-if _admin_key not in st.session_state:
-    st.session_state[_admin_key] = False
+admin_tab1, admin_tab2, admin_tab3 = st.tabs([
+    "👥 Subscribers", "🔑 API Keys", "📊 Full Audit Log"
+])
 
-if not st.session_state[_admin_key]:
-    st.markdown('<div class="admin-gate">', unsafe_allow_html=True)
-    st.markdown("""
-    <h3>🔒 Admin Access Required</h3>
-    <p>Subscriber list, full audit log, and API key management are restricted to admins.</p>
-    """, unsafe_allow_html=True)
-    import os
-    admin_pass_input = st.text_input(
-        "Admin Password", type="password", key="admin_pass_input",
-        placeholder="Enter admin password…"
-    )
-    if st.button("Unlock Admin Panel", type="primary", key="btn_admin_unlock"):
-        expected = os.environ.get("ADMIN_PASSWORD_HASH", "")
-        raw_pass  = admin_pass_input.strip()
-        authed = False
-        if expected:
-            try:
-                import bcrypt
-                authed = bcrypt.checkpw(raw_pass.encode(), expected.encode())
-            except Exception:
-                # fallback: plain comparison (dev only)
-                authed = (raw_pass == expected)
-        else:
-            # No password set — allow access in dev mode with a warning
-            authed = (raw_pass == "admin")
-            st.warning("⚠️ No ADMIN_PASSWORD_HASH set in .env — using default dev password 'admin'. Set this before production.")
-        if authed:
-            st.session_state[_admin_key] = True
-            try:
-                from monsoon_textile_app.utils.audit_log import audit
-                audit("admin", "admin_panel_access", severity="warning",
-                      details={"page": "Security Audit"})
-            except Exception:
-                pass
-            st.rerun()
-        else:
-            st.error("❌ Incorrect password.")
-    st.markdown("</div>", unsafe_allow_html=True)
+# ── Subscribers ──────────────────────────────────────────────────────────
+with admin_tab1:
+    st.markdown("#### Email Subscribers")
+    try:
+        from monsoon_textile_app.api.data_bridge import (
+            get_subscriber_list, remove_subscriber
+        )
+        subs = get_subscriber_list()
+    except Exception as e:
+        subs = []
+        st.error(f"Could not load subscribers: {e}")
 
-else:
-    st.success("✅ Admin panel unlocked")
-    if st.button("🔒 Lock Admin Panel", key="btn_admin_lock"):
-        st.session_state[_admin_key] = False
-        st.rerun()
-
-    admin_tab1, admin_tab2, admin_tab3 = st.tabs([
-        "👥 Subscribers", "🔑 API Keys", "📊 Full Audit Log"
-    ])
-
-    # ── Subscribers ──────────────────────────────────────────────────────────
-    with admin_tab1:
-        st.markdown("#### Email Subscribers")
-        try:
-            from monsoon_textile_app.api.data_bridge import (
-                get_subscriber_list, remove_subscriber
-            )
-            subs = get_subscriber_list()
-        except Exception as e:
-            subs = []
-            st.error(f"Could not load subscribers: {e}")
-
-        if subs:
-            df_subs = pd.DataFrame([
-                {
-                    "Email":       s.get("email", ""),
-                    "Verified":    "✅" if s.get("verified", True) else "⏳ Pending",
-                    "Alert Types": ", ".join(s.get("alert_types", [])),
-                    "Subscribed":  s.get("subscribed_at", "—")[:10],
-                }
-                for s in subs
-            ])
-            st.dataframe(df_subs, use_container_width=True, hide_index=True)
-            st.caption(f"Total: {len(subs)} subscriber(s)")
-
-            st.markdown("---")
-            st.markdown("**Remove a subscriber**")
-            rem_email = st.text_input("Email to remove", key="admin_rem_email",
-                                       placeholder="user@example.com")
-            if st.button("Remove Subscriber", key="btn_admin_remove", type="secondary"):
-                if rem_email:
-                    result = remove_subscriber(rem_email.strip().lower())
-                    if result["status"] == "unsubscribed":
-                        st.success(result["message"])
-                    else:
-                        st.warning(result["message"])
-        else:
-            st.info("No subscribers yet.")
-
-    # ── API Keys ──────────────────────────────────────────────────────────────
-    with admin_tab2:
-        st.markdown("#### API Keys")
-        try:
-            from monsoon_textile_app.api.auth import list_api_keys, generate_api_key, revoke_api_key
-            keys = list_api_keys()
-        except Exception as e:
-            keys = []
-            st.error(f"Could not load API keys: {e}")
-
-        if keys:
-            df_keys = pd.DataFrame([
-                {
-                    "Key ID":     k.get("key_id", ""),
-                    "Name":       k.get("name", ""),
-                    "Active":     "✅" if k.get("active", True) else "❌ Revoked",
-                    "Calls":      k.get("call_count", 0),
-                    "Created":    str(k.get("created_at", ""))[:10],
-                    "Last Used":  str(k.get("last_used", "—"))[:10],
-                }
-                for k in keys
-            ])
-            st.dataframe(df_keys, use_container_width=True, hide_index=True)
+    if subs:
+        df_subs = pd.DataFrame([
+            {
+                "Email":       s.get("email", ""),
+                "Verified":    "✅" if s.get("verified", True) else "⏳ Pending",
+                "Alert Types": ", ".join(s.get("alert_types", [])),
+                "Subscribed":  s.get("subscribed_at", "—")[:10],
+            }
+            for s in subs
+        ])
+        st.dataframe(df_subs, use_container_width=True, hide_index=True)
+        st.caption(f"Total: {len(subs)} subscriber(s)")
 
         st.markdown("---")
-        col_gen, col_rev = st.columns(2)
-        with col_gen:
-            st.markdown("**Generate new key**")
-            new_key_name = st.text_input("Application name", key="admin_key_name",
-                                          placeholder="e.g. ICICI Risk Engine")
-            if st.button("Generate Key", key="btn_admin_gen_key", type="primary"):
-                if new_key_name.strip():
-                    result = generate_api_key(new_key_name.strip(), created_by="admin-panel")
-                    st.success(f"Key generated for **{new_key_name}**")
-                    st.code(result["raw_key"], language="text")
-                    st.warning("⚠️ Copy this key now — it will NOT be shown again.")
-                    try:
-                        from monsoon_textile_app.utils.audit_log import audit
-                        audit("auth", "api_key_generated", severity="warning",
-                              user="admin-panel", details={"name": new_key_name})
-                    except Exception:
-                        pass
+        st.markdown("**Remove a subscriber**")
+        rem_email = st.text_input("Email to remove", key="admin_rem_email",
+                                   placeholder="user@example.com")
+        if st.button("Remove Subscriber", key="btn_admin_remove", type="secondary"):
+            if rem_email:
+                result = remove_subscriber(rem_email.strip().lower())
+                if result["status"] == "unsubscribed":
+                    st.success(result["message"])
                 else:
-                    st.warning("Enter an application name first.")
-        with col_rev:
-            st.markdown("**Revoke a key**")
-            rev_key_id = st.text_input("Key ID to revoke", key="admin_rev_key",
-                                        placeholder="kid_xxxxxx")
-            if st.button("Revoke Key", key="btn_admin_rev", type="secondary"):
-                if rev_key_id.strip():
-                    success = revoke_api_key(rev_key_id.strip())
-                    if success:
-                        st.success(f"Key `{rev_key_id}` revoked.")
-                    else:
-                        st.warning(f"Key `{rev_key_id}` not found.")
+                    st.warning(result["message"])
+    else:
+        st.info("No subscribers yet.")
+
+# ── API Keys ──────────────────────────────────────────────────────────────
+with admin_tab2:
+    st.markdown("#### API Keys")
+    try:
+        from monsoon_textile_app.api.auth import list_api_keys, generate_api_key, revoke_api_key
+        keys = list_api_keys()
+    except Exception as e:
+        keys = []
+        st.error(f"Could not load API keys: {e}")
+
+    if keys:
+        df_keys = pd.DataFrame([
+            {
+                "Key ID":     k.get("key_id", ""),
+                "Name":       k.get("name", ""),
+                "Active":     "✅" if k.get("active", True) else "❌ Revoked",
+                "Calls":      k.get("call_count", 0),
+                "Created":    str(k.get("created_at", ""))[:10],
+                "Last Used":  str(k.get("last_used", "—"))[:10],
+            }
+            for k in keys
+        ])
+        st.dataframe(df_keys, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+    col_gen, col_rev = st.columns(2)
+    with col_gen:
+        st.markdown("**Generate new key**")
+        new_key_name = st.text_input("Application name", key="admin_key_name",
+                                      placeholder="e.g. ICICI Risk Engine")
+        if st.button("Generate Key", key="btn_admin_gen_key", type="primary"):
+            if new_key_name.strip():
+                result = generate_api_key(new_key_name.strip(), created_by="admin-panel")
+                st.success(f"Key generated for **{new_key_name}**")
+                st.code(result["raw_key"], language="text")
+                st.warning("⚠️ Copy this key now — it will NOT be shown again.")
+                try:
+                    from monsoon_textile_app.utils.audit_log import audit
+                    audit("auth", "api_key_generated", severity="warning",
+                          user="admin-panel", details={"name": new_key_name})
+                except Exception:
+                    pass
+            else:
+                st.warning("Enter an application name first.")
+    with col_rev:
+        st.markdown("**Revoke a key**")
+        rev_key_id = st.text_input("Key ID to revoke", key="admin_rev_key",
+                                    placeholder="kid_xxxxxx")
+        if st.button("Revoke Key", key="btn_admin_rev", type="secondary"):
+            if rev_key_id.strip():
+                success = revoke_api_key(rev_key_id.strip())
+                if success:
+                    st.success(f"Key `{rev_key_id}` revoked.")
                 else:
-                    st.warning("Enter a Key ID first.")
+                    st.warning(f"Key `{rev_key_id}` not found.")
+            else:
+                st.warning("Enter a Key ID first.")
 
-    # ── Full Audit Log ────────────────────────────────────────────────────────
-    with admin_tab3:
-        st.markdown("#### Full Audit Log (disk)")
-        try:
-            from monsoon_textile_app.utils.audit_log import load_all_events, event_counts_by_category
-            all_events = load_all_events(500)
-            counts     = event_counts_by_category()
-        except Exception as e:
-            all_events = []
-            counts     = {}
-            st.error(f"Could not load audit log: {e}")
+# ── Full Audit Log ────────────────────────────────────────────────────────
+with admin_tab3:
+    st.markdown("#### Full Audit Log (disk)")
+    try:
+        from monsoon_textile_app.utils.audit_log import load_all_events, event_counts_by_category
+        all_events = load_all_events(500)
+        counts     = event_counts_by_category()
+    except Exception as e:
+        all_events = []
+        counts     = {}
+        st.error(f"Could not load audit log: {e}")
 
-        if counts:
-            count_cols = st.columns(len(counts))
-            for i, (cat, cnt) in enumerate(counts.items()):
-                color = CAT_COLORS.get(cat, "#64748b")
-                count_cols[i].metric(cat.upper(), cnt)
+    if counts:
+        count_cols = st.columns(len(counts))
+        for i, (cat, cnt) in enumerate(counts.items()):
+            color = CAT_COLORS.get(cat, "#64748b")
+            count_cols[i].metric(cat.upper(), cnt)
 
-        if all_events:
-            df_log = pd.DataFrame([
-                {
-                    "Time":     ev.get("ts", "")[:19],
-                    "Severity": ev.get("severity", ""),
-                    "Category": ev.get("category", ""),
-                    "Action":   ev.get("action", ""),
-                    "User":     ev.get("user", ""),
-                    "IP":       ev.get("ip", ""),
-                    "Details":  str(ev.get("details", {}))[:80],
-                }
-                for ev in all_events
-            ])
-            st.dataframe(df_log, use_container_width=True, hide_index=True)
+    if all_events:
+        df_log = pd.DataFrame([
+            {
+                "Time":     ev.get("ts", "")[:19],
+                "Severity": ev.get("severity", ""),
+                "Category": ev.get("category", ""),
+                "Action":   ev.get("action", ""),
+                "User":     ev.get("user", ""),
+                "IP":       ev.get("ip", ""),
+                "Details":  str(ev.get("details", {}))[:80],
+            }
+            for ev in all_events
+        ])
+        st.dataframe(df_log, use_container_width=True, hide_index=True)
 
-            # CSV download
-            csv = df_log.to_csv(index=False)
-            st.download_button(
-                "⬇️ Download Audit CSV",
-                data=csv,
-                file_name=f"rainloom_audit_{datetime.utcnow().strftime('%Y%m%d_%H%M')}.csv",
-                mime="text/csv",
-            )
-        else:
-            st.info("No events in log file yet.")
+        # CSV download
+        csv = df_log.to_csv(index=False)
+        st.download_button(
+            "⬇️ Download Audit CSV",
+            data=csv,
+            file_name=f"rainloom_audit_{datetime.utcnow().strftime('%Y%m%d_%H%M')}.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info("No events in log file yet.")
 
 # ── Security Info Cards ────────────────────────────────────────────────────────
 st.markdown('<div class="sec-div"></div>', unsafe_allow_html=True)
